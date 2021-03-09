@@ -132,6 +132,15 @@ def load_and_run(path, repl=False):
         clock.clock.clear()
         del sys.modules[name]
 
+def get_mod_dimensions(mod, w=100, h=100):
+    from pathlib import Path
+    path = Path(mod.__file__).expanduser().resolve()
+    code = compile(
+        path.read_text(), path.name, 'exec', 
+        dont_inherit=True
+    )
+    mod_vars = dict(zip(code.co_names, code.co_consts))
+    return mod_vars.get('WIDTH', w), mod_vars.get('HEIGHT', h)
 
 def prepare_mod(mod):
     """Prepare to execute the module code for Pygame Zero.
@@ -152,7 +161,8 @@ def prepare_mod(mod):
 
     # An icon needs to exist before the window is created.
     PGZeroGame.show_default_icon()
-    pygame.display.set_mode((100, 100), DISPLAY_FLAGS)
+    w, h = get_mod_dimensions(mod)
+    pygame.display.set_mode((w, h), DISPLAY_FLAGS)
 
     # Copy pgzero builtins into system builtins
     from . import builtins as pgzero_builtins
