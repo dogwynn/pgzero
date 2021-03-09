@@ -9,7 +9,7 @@ with io.open(path, encoding='utf8') as f:
 
 install_requires = [
     "pygame>=1.9.2, <2.0 ; python_version<'3.8'",
-    "pygame=>2 ; python_version>='3.8'",
+    "pygame>=2 ; python_version>='3.8'",
     'numpy',
 ]
 
