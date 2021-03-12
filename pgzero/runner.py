@@ -134,6 +134,7 @@ def load_and_run(path, repl=False):
 
 def get_mod_dimensions(mod, w=100, h=100):
     from pathlib import Path
+    import dis
     path = Path(mod.__file__).expanduser().resolve()
     code = compile(
         path.read_text(), path.name, 'exec', 
