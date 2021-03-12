@@ -139,8 +139,22 @@ def get_mod_dimensions(mod, w=100, h=100):
         path.read_text(), path.name, 'exec', 
         dont_inherit=True
     )
-    mod_vars = dict(zip(code.co_names, code.co_consts))
-    return mod_vars.get('WIDTH', w), mod_vars.get('HEIGHT', h)
+    instructions = list(dis.get_instructions(code))
+    mod_vars = dict([
+        (instructions[i+1].argval, instructions[i].argval)
+        for i in range(len(instructions) - 1)
+        if (instructions[i].opname == 'LOAD_CONST' and 
+            instructions[i + 1].opname == 'STORE_NAME')
+    ])
+
+    w, h = mod_vars.get('WIDTH', w), mod_vars.get('HEIGHT', h)    
+    if not (type(w) is int and type(h) is int):
+        raise AttributeError(
+            'WIDTH and HEIGHT must be integers:'
+            f' type(WIDTH) == {repr(w)} is {type(w)}'
+            f' and type(HEIGHT) == {repr(h)} is {type(h)}'
+        )
+    return w, h
 
 def prepare_mod(mod):
     """Prepare to execute the module code for Pygame Zero.
